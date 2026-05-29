@@ -7,26 +7,37 @@ A step-by-step RSA implementation project in C++17, from raw RSA to real cryptog
 Current version:
 
 ```text
-v0 - Raw RSA
-```
+v1 - Byte-Oriented RSA
+````
 
 ## Features
 
 * OpenSSL BIGNUM backend
-* Minimal BigInt wrapper
-* RSA key generation
+* BigInt wrapper
+* RSA key generation (real primes)
 * RSA encryption/decryption
-* Public/private key structure
-* Simple key printing
+* Byte-oriented API (std::vector<uint8_t>)
+* bytes <-> BigInt conversion
+* message size validation (m < n)
+* unit tests
 * CMake build system
 
 ## Current Scope
 
-This version intentionally implements only raw RSA mathematics:
+This version extends raw RSA to support real binary data.
+
+RSA core:
 
 c = m^e \bmod n
 
 m = c^d \bmod n
+
+Added in v1:
+
+* binary input/output API
+* BigInt serialization (bytes <-> bigint)
+* oversized message rejection
+* real key generation with BN_generate_prime_ex
 
 Not implemented yet:
 
@@ -36,7 +47,6 @@ Not implemented yet:
 * PEM/DER
 * ASN.1
 * CRT optimization
-* custom bigint
 * constant-time protection
 
 ## Build
@@ -85,6 +95,7 @@ tests/
 This project focuses on:
 
 * understanding RSA internals
-* learning cryptographic engineering
-* building RSA incrementally
-* keeping the implementation simple and educational
+* moving from math RSA to data RSA
+* implementing binary-safe cryptographic APIs
+* keeping implementation simple and incremental
+

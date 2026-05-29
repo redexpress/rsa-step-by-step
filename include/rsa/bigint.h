@@ -2,6 +2,8 @@
 #define BIGINT_H
 
 #include <openssl/bn.h>
+#include <vector>
+#include <cstdint>
 
 namespace rsa {
 
@@ -45,6 +47,12 @@ namespace rsa {
             const BigInt& a,
             const BigInt& mod
         );
+
+        static BigInt from_bytes(
+            const std::vector<uint8_t>& bytes
+        );
+
+        std::vector<uint8_t> to_bytes() const;
 
     private:
         BIGNUM* bn_;

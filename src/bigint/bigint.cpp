@@ -1,134 +1,72 @@
-#include <utility>
-
 #include "rsa/bigint.h"
 
 namespace rsa {
 
-    BigInt::BigInt() {
-        bn_ = BN_new();
-    }
+BigInt::BigInt() { bn_ = BN_new(); }
 
-    BigInt::BigInt(unsigned long value) {
-        bn_ = BN_new();
-        BN_set_word(bn_, value);
-    }
+BigInt::BigInt(unsigned long v) { bn_ = BN_new(); BN_set_word(bn_, v); }
 
-    BigInt::BigInt(const BigInt& other) {
-        bn_ = BN_dup(other.bn_);
-    }
+BigInt::BigInt(const BigInt& o) { bn_ = BN_dup(o.bn_); }
 
-    BigInt& BigInt::operator=(const BigInt& other) {
-        if (this != &other) {
-            BN_free(bn_);
-            bn_ = BN_dup(other.bn_);
-        }
+BigInt& BigInt::operator=(const BigInt& o) {
+    if (this != &o) { BN_free(bn_); bn_ = BN_dup(o.bn_); }
+    return *this;
+}
 
-        return *this;
-    }
+BigInt::BigInt(BigInt&& o) : bn_(o.bn_) { o.bn_ = nullptr; }
 
-    BigInt::BigInt(BigInt&& other) {
-        bn_ = other.bn_;
-        other.bn_ = nullptr;
-    }
+BigInt& BigInt::operator=(BigInt&& o) {
+    if (this != &o) { BN_free(bn_); bn_ = o.bn_; o.bn_ = nullptr; }
+    return *this;
+}
 
-    BigInt& BigInt::operator=(BigInt&& other) {
-        if (this != &other) {
-            BN_free(bn_);
+BigInt::~BigInt() { BN_free(bn_); }
 
-            bn_ = other.bn_;
-            other.bn_ = nullptr;
-        }
+char* BigInt::to_dec() const { return BN_bn2dec(bn_); }
 
-        return *this;
-    }
+BIGNUM* BigInt::raw() const { return bn_; }
 
-    BigInt::~BigInt() {
-        BN_free(bn_);
-    }
+BigInt BigInt::multiply(const BigInt& a, const BigInt& b) {
+    BigInt r;
+    BN_CTX* c = BN_CTX_new();
+    BN_mul(r.bn_, a.bn_, b.bn_, c);
+    BN_CTX_free(c);
+    return r;
+}
 
-    char* BigInt::to_dec() const {
-        return BN_bn2dec(bn_);
-    }
+BigInt BigInt::subtract(const BigInt& a, const BigInt& b) {
+    BigInt r;
+    BN_sub(r.bn_, a.bn_, b.bn_);
+    return r;
+}
 
-    BIGNUM* BigInt::raw() const {
-        return bn_;
-    }
+BigInt BigInt::mod_exp(const BigInt& base, const BigInt& exp, const BigInt& mod) {
+    BigInt r;
+    BN_CTX* c = BN_CTX_new();
+    BN_mod_exp(r.bn_, base.bn_, exp.bn_, mod.bn_, c);
+    BN_CTX_free(c);
+    return r;
+}
 
-    BigInt BigInt::multiply(
-        const BigInt& a,
-        const BigInt& b
-    ) {
-        BigInt result;
+BigInt BigInt::mod_inverse(const BigInt& a, const BigInt& mod) {
+    BigInt r;
+    BN_CTX* c = BN_CTX_new();
+    BN_mod_inverse(r.bn_, a.bn_, mod.bn_, c);
+    BN_CTX_free(c);
+    return r;
+}
 
-        BN_CTX* ctx = BN_CTX_new();
+BigInt BigInt::from_bytes(const std::vector<uint8_t>& bytes) {
+    BigInt r;
+    BN_bin2bn(bytes.data(), bytes.size(), r.bn_);
+    return r;
+}
 
-        BN_mul(
-            result.bn_,
-            a.bn_,
-            b.bn_,
-            ctx
-        );
-
-        BN_CTX_free(ctx);
-
-        return result;
-    }
-
-    BigInt BigInt::subtract(
-        const BigInt& a,
-        const BigInt& b
-    ) {
-        BigInt result;
-
-        BN_sub(
-            result.bn_,
-            a.bn_,
-            b.bn_
-        );
-
-        return result;
-    }
-
-    BigInt BigInt::mod_exp(
-        const BigInt& base,
-        const BigInt& exp,
-        const BigInt& mod
-    ) {
-        BigInt result;
-
-        BN_CTX* ctx = BN_CTX_new();
-
-        BN_mod_exp(
-            result.bn_,
-            base.bn_,
-            exp.bn_,
-            mod.bn_,
-            ctx
-        );
-
-        BN_CTX_free(ctx);
-
-        return result;
-    }
-
-    BigInt BigInt::mod_inverse(
-        const BigInt& a,
-        const BigInt& mod
-    ) {
-        BigInt result;
-
-        BN_CTX* ctx = BN_CTX_new();
-
-        BN_mod_inverse(
-            result.bn_,
-            a.bn_,
-            mod.bn_,
-            ctx
-        );
-
-        BN_CTX_free(ctx);
-
-        return result;
-    }
+std::vector<uint8_t> BigInt::to_bytes() const {
+    int sz = BN_num_bytes(bn_);
+    std::vector<uint8_t> b(sz);
+    BN_bn2bin(bn_, b.data());
+    return b;
+}
 
 }
