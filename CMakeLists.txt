@@ -10,6 +10,9 @@ add_library(rsa_lib
         src/rsa/rsa_key.cpp
         src/rsa/rsa_engine.cpp
         src/padding/padding.cpp
+        src/asn1/asn1.cpp
+        src/der/der.cpp
+        src/pem/pem.cpp
 )
 
 target_include_directories(rsa_lib PUBLIC include)

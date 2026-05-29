@@ -48,6 +48,11 @@ namespace rsa {
             const BigInt& mod
         );
 
+        static BigInt mod(
+            const BigInt& a,
+            const BigInt& m
+        );
+
         static BigInt from_bytes(
             const std::vector<uint8_t>& bytes
         );

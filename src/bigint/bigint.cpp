@@ -56,6 +56,14 @@ BigInt BigInt::mod_inverse(const BigInt& a, const BigInt& mod) {
     return r;
 }
 
+BigInt BigInt::mod(const BigInt& a, const BigInt& m) {
+    BigInt r;
+    BN_CTX* c = BN_CTX_new();
+    BN_mod(r.bn_, a.bn_, m.bn_, c);
+    BN_CTX_free(c);
+    return r;
+}
+
 BigInt BigInt::from_bytes(const std::vector<uint8_t>& bytes) {
     BigInt r;
     BN_bin2bn(bytes.data(), bytes.size(), r.bn_);
@@ -64,6 +72,7 @@ BigInt BigInt::from_bytes(const std::vector<uint8_t>& bytes) {
 
 std::vector<uint8_t> BigInt::to_bytes() const {
     int sz = BN_num_bytes(bn_);
+    if (sz == 0) return {0x00};
     std::vector<uint8_t> b(sz);
     BN_bn2bin(bn_, b.data());
     return b;

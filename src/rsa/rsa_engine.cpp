@@ -24,6 +24,12 @@ namespace rsa {
         key.e = BigInt(17);
         key.d = BigInt::mod_inverse(key.e, phi);
 
+        key.p = p;
+        key.q = q;
+        key.dp = BigInt::mod(key.d, BigInt::subtract(p, BigInt(1)));
+        key.dq = BigInt::mod(key.d, BigInt::subtract(q, BigInt(1)));
+        key.qinv = BigInt::mod_inverse(q, p);
+
         key.set_block_size(BN_num_bytes(key.n.raw()));
 
         return key;
@@ -53,6 +59,12 @@ namespace rsa {
         BigInt phi = BigInt::multiply(p1, q1);
         key.e = BigInt(65537);
         key.d = BigInt::mod_inverse(key.e, phi);
+
+        key.p = bp;
+        key.q = bq;
+        key.dp = BigInt::mod(key.d, BigInt::subtract(bp, one));
+        key.dq = BigInt::mod(key.d, BigInt::subtract(bq, one));
+        key.qinv = BigInt::mod_inverse(bq, bp);
 
         key.set_block_size(BN_num_bytes(key.n.raw()));
 

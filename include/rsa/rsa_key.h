@@ -12,6 +12,11 @@ namespace rsa {
         BigInt n;
         BigInt e;
         BigInt d;
+        BigInt p;
+        BigInt q;
+        BigInt dp;
+        BigInt dq;
+        BigInt qinv;
 
         RSAKey();
 
