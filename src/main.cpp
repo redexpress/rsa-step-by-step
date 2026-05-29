@@ -5,6 +5,7 @@
 
 #include "rsa/rsa_engine.h"
 #include "rsa/padding.h"
+#include "rsa/oaep.h"
 #include "rsa/pem.h"
 
 void version0() {
@@ -81,8 +82,33 @@ void version3() {
                 pub_parsed.block_size());
 }
 
+void version5() {
+    rsa::RSAKey key = rsa::RSAEngine::generate_key(1024);
+
+    std::vector<uint8_t> msg = {'H', 'e', 'l', 'l', 'o'};
+    std::vector<uint8_t> ct  = rsa::OAEP::encrypt(msg, key);
+    std::vector<uint8_t> pt  = rsa::OAEP::decrypt(ct, key);
+
+    std::printf("cipher = ");
+    for (uint8_t b : ct) std::printf("%02x", b);
+    std::printf("\n");
+    std::printf("plain = ");
+    for (uint8_t b : pt) std::printf("%c", b);
+    std::printf("\n");
+
+    // round-trip through PEM + OAEP
+    std::string pem_priv = rsa::PEM::private_key(key);
+    rsa::RSAKey parsed;
+    rsa::PEM::decode_private_key(pem_priv, parsed);
+
+    std::vector<uint8_t> ct2 = rsa::OAEP::encrypt(msg, parsed);
+    std::vector<uint8_t> pt2 = rsa::OAEP::decrypt(ct2, parsed);
+    std::printf("PEM round-trip plain = ");
+    for (uint8_t b : pt2) std::printf("%c", b);
+    std::printf("\n");
+}
+
 int main() {
-    version2();
-    version3();
+    version5();
     return 0;
 }

@@ -13,6 +13,8 @@ add_library(rsa_lib
         src/asn1/asn1.cpp
         src/der/der.cpp
         src/pem/pem.cpp
+        src/hash/hash.cpp
+        src/padding/oaep.cpp
 )
 
 target_include_directories(rsa_lib PUBLIC include)
