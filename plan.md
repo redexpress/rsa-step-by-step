@@ -71,7 +71,7 @@ Recommended architecture:
 This layout should remain stable across all versions.
 
 ```text
-rsa/
+/
 ├── CMakeLists.txt
 ├── cmake/
 ├── include/
