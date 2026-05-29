@@ -1,6 +1,8 @@
 #ifndef RSA_KEY_H
 #define RSA_KEY_H
 
+#include <openssl/bn.h>
+
 #include "rsa/bigint.h"
 
 namespace rsa {
@@ -20,6 +22,14 @@ namespace rsa {
         );
 
         void print() const;
+
+        int block_size() const;
+
+    public:
+        void set_block_size(int k) { k_ = k; }
+
+    private:
+        int k_;
     };
 }
 

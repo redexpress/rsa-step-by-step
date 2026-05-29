@@ -69,4 +69,11 @@ std::vector<uint8_t> BigInt::to_bytes() const {
     return b;
 }
 
+std::vector<uint8_t> BigInt::to_bytes(size_t min_size) const {
+    int sz = BN_num_bytes(bn_);
+    std::vector<uint8_t> b(min_size, 0x00);
+    BN_bn2bin(bn_, b.data() + (min_size - sz));
+    return b;
+}
+
 }

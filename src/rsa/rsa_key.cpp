@@ -1,11 +1,12 @@
 #include <cstdio>
+#include <openssl/bn.h>
 #include <openssl/crypto.h>
 
 #include "rsa/rsa_key.h"
 
 namespace rsa {
 
-    RSAKey::RSAKey() {
+    RSAKey::RSAKey() : k_(0) {
     }
 
     RSAKey::RSAKey(
@@ -16,6 +17,7 @@ namespace rsa {
         this->n = n;
         this->e = e;
         this->d = d;
+        this->k_ = BN_num_bytes(n.raw());
     }
 
     void RSAKey::print() const {
@@ -31,4 +33,9 @@ namespace rsa {
         OPENSSL_free(e_str);
         OPENSSL_free(d_str);
     }
+
+    int RSAKey::block_size() const {
+        return k_;
+    }
+
 }

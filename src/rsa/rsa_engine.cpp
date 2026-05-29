@@ -2,6 +2,10 @@
 
 #include "rsa/rsa_engine.h"
 
+#include <openssl/rand.h>
+
+#include "rsa/padding.h"
+
 namespace rsa {
 
     RSAKey RSAEngine::generate_key() {
@@ -19,6 +23,8 @@ namespace rsa {
 
         key.e = BigInt(17);
         key.d = BigInt::mod_inverse(key.e, phi);
+
+        key.set_block_size(BN_num_bytes(key.n.raw()));
 
         return key;
     }
@@ -48,6 +54,8 @@ namespace rsa {
         key.e = BigInt(65537);
         key.d = BigInt::mod_inverse(key.e, phi);
 
+        key.set_block_size(BN_num_bytes(key.n.raw()));
+
         BN_free(p);
         BN_free(q);
         BN_CTX_free(ctx);
@@ -66,23 +74,21 @@ namespace rsa {
     std::vector<uint8_t> RSAEngine::encrypt(
         const std::vector<uint8_t>& message, const RSAKey& key) {
 
-        BigInt m = BigInt::from_bytes(message);
-
-        if (BN_cmp(m.raw(), key.n.raw()) >= 0) {
-            return {};
-        }
-
+        int k = key.block_size();
+        std::vector<uint8_t> em = PKCS1v15::encode(message, k);
+        BigInt m = BigInt::from_bytes(em);
         BigInt c = encrypt(m, key);
-        return c.to_bytes();
+
+        return c.to_bytes(k);
     }
 
     std::vector<uint8_t> RSAEngine::decrypt(
         const std::vector<uint8_t>& cipher, const RSAKey& key) {
 
+        int k = key.block_size();
         BigInt c = BigInt::from_bytes(cipher);
-
         BigInt m = decrypt(c, key);
-        return m.to_bytes();
+        return PKCS1v15::decode(m.to_bytes(k), k);
     }
 
 }

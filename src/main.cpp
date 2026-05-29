@@ -1,7 +1,10 @@
 #include <cstdio>
+#include <cstring>
+#include <openssl/bn.h>
 #include <openssl/crypto.h>
 
 #include "rsa/rsa_engine.h"
+#include "rsa/padding.h"
 
 void version0() {
     rsa::RSAKey key = rsa::RSAEngine::generate_key();
@@ -23,11 +26,11 @@ void version0() {
     OPENSSL_free(p);
 }
 
-void version1() {
+void version2() {
     rsa::RSAKey key = rsa::RSAEngine::generate_key(512);
     key.print();
     std::vector<uint8_t> message = {'H', 'e', 'l', 'l', 'o'};
-    std::vector<uint8_t> cipher = rsa::RSAEngine::encrypt(message, key);
+    std::vector<uint8_t> cipher = rsa::RSAEngine::encrypt(message, key);  // high-level encrypt (includes padding internally)
     std::vector<uint8_t> plain = rsa::RSAEngine::decrypt(cipher, key);
     std::printf("cipher = ");
 
@@ -44,7 +47,8 @@ void version1() {
     std::printf("\n");
 }
 
+
 int main() {
-    version1();
+    version2();
     return 0;
 }

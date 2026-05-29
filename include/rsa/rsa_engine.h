@@ -1,10 +1,11 @@
 #ifndef RSA_ENGINE_H
 #define RSA_ENGINE_H
 
-#include "rsa/bigint.h"
-#include "rsa/rsa_key.h"
 #include <vector>
 #include <cstdint>
+
+#include "rsa/bigint.h"
+#include "rsa/rsa_key.h"
 
 namespace rsa {
 
@@ -31,8 +32,6 @@ namespace rsa {
             const std::vector<uint8_t>& cipher, const RSAKey& key
         );
     };
-
-
 
 }
 

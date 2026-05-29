@@ -53,6 +53,7 @@ namespace rsa {
         );
 
         std::vector<uint8_t> to_bytes() const;
+        std::vector<uint8_t> to_bytes(size_t min_size) const;
 
     private:
         BIGNUM* bn_;

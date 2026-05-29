@@ -9,6 +9,7 @@ add_library(rsa_lib
         src/bigint/bigint.cpp
         src/rsa/rsa_key.cpp
         src/rsa/rsa_engine.cpp
+        src/padding/padding.cpp
 )
 
 target_include_directories(rsa_lib PUBLIC include)
