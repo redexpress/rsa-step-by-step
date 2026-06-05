@@ -1,0 +1,34 @@
+#include <cstdio>
+#include <openssl/crypto.h>
+
+#include "rsa/rsa_key.h"
+
+namespace rsa {
+
+    RSAKey::RSAKey() {
+    }
+
+    RSAKey::RSAKey(
+        const BigInt& n,
+        const BigInt& e,
+        const BigInt& d
+    ) {
+        this->n = n;
+        this->e = e;
+        this->d = d;
+    }
+
+    void RSAKey::print() const {
+        char* n_str = n.to_dec();
+        char* e_str = e.to_dec();
+        char* d_str = d.to_dec();
+
+        std::printf("n = %s\n", n_str);
+        std::printf("e = %s\n", e_str);
+        std::printf("d = %s\n", d_str);
+
+        OPENSSL_free(n_str);
+        OPENSSL_free(e_str);
+        OPENSSL_free(d_str);
+    }
+}
